@@ -205,23 +205,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         loadedMapStyle.addLayer(destinationSymbolLayer);
     }
 
-
-    /*private void addParkingIconSymbolLayer(@NonNull Style loadedMapStyle) {
-        loadedMapStyle.addImage("parking-icon-id",
-                BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
-        GeoJsonSource geoJsonSource = new GeoJsonSource("parking-source-id");
-        geoJsonSource.setGeoJson(Feature.fromGeometry( Point.fromLngLat( 7.956282,48.465226)));
-        loadedMapStyle.addSource(geoJsonSource);
-
-        SymbolLayer destinationSymbolLayer = new SymbolLayer("parking-symbol-layer-id","parking-source-id");
-        destinationSymbolLayer.withProperties(
-                iconImage("parking-icon-id"),
-                iconAllowOverlap(true),
-                iconIgnorePlacement(true)
-        );
-        loadedMapStyle.addLayer(destinationSymbolLayer);
-    }*/
-
     @SuppressWarnings( {"MissingPermission"})
     @Override
     public boolean onMapClick(@NonNull LatLng point) {
