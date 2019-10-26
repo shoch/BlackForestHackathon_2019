@@ -65,7 +65,6 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
         navigationView.onCreate(savedInstanceState);
         navigationView.initialize(this, initialPosition);
-
     }
 
     @Override
