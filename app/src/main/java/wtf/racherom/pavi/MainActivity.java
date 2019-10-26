@@ -159,35 +159,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
         GeoJsonSource geoJsonSource = new GeoJsonSource("parking-source-id");
 
-       /* Feature f1 = Feature.fromGeometry( Point.fromLngLat( 7.956282,48.465226));
-        f1.addNumberProperty("occupancy",0);
-        f1.addNumberProperty("name",0);
-        f1.addNumberProperty("radius",20);
-
-        Feature f2 = Feature.fromGeometry( Point.fromLngLat(  8.033090,48.338843));
-        f2.addNumberProperty("occupancy",1);
-        f2.addNumberProperty("radius",40);*/
-
-
-
-       // List<Feature> featureCollection = new ArrayList<Feature>();
-        //featureCollection.add(f1);
-        //featureCollection.add(f2);
-
-
         geoJsonSource.setGeoJson(FeatureCollection.fromFeatures(KnownLocations.getFeatuers()));
-        //geoJsonSource.setGeoJson(f2);
-
         loadedMapStyle.addSource(geoJsonSource);
 
-
-
         CircleLayer destinationSymbolLayer = new CircleLayer("parking-symbol-layer-id","parking-source-id");
-        /*destinationSymbolLayer.withProperties(
-                iconImage("parking-icon-id"),
-                iconAllowOverlap(true),
-                iconIgnorePlacement(true)
-        );*/
+
         destinationSymbolLayer.setProperties(
                 // Color.rgb(117,52,175)   grün
                 // Color.rgb(91,255,159) grün
@@ -222,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 literal(1), rgb(179,39,29)
                         )
                 ),
-                circleOpacity(0.5f)
+                circleOpacity(0.7f)
                );
 
         loadedMapStyle.addLayer(destinationSymbolLayer);

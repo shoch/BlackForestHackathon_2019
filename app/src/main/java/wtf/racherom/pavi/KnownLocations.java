@@ -113,7 +113,7 @@ public class KnownLocations {
     public static List<Feature> getFeatuers(){
         List<Feature> features = new ArrayList<Feature>();
 
-        for (int i=0;i<=locations.length;i++)
+        for (int i=0;i<locations.length;i++)
         {
             Feature feature = Feature.fromGeometry(locations[i]);
             feature.addNumberProperty("occupancy", Math.random()%1);
@@ -121,6 +121,6 @@ public class KnownLocations {
             features.add(feature);
         }
 
-        return features,
+        return features;
     }
 }
