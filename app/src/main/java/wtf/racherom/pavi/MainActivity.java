@@ -169,10 +169,11 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 // Color.rgb(91,255,159) grün
                 // Color.rgb(179,39,29) dunkelste rot
                 circleRadius(
-                        interpolate(exponential(1.0f), get("DBH"),
-                                stop(0, 0f),
-                                stop(1, 1f),
-                                stop(110, 11f)
+                        interpolate(linear(), get("radius") ,
+                                stop(0, 10f),
+                                stop(10, 20f),
+                                stop(20, 30f),
+                                stop(110, 40f)
                         )
                 ),
                //circleRadius(get("radius")),
