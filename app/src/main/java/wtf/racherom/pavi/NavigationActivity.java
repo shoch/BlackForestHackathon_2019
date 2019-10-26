@@ -1,5 +1,6 @@
 package wtf.racherom.pavi;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import java.util.List;
 import androidx.annotation.NonNull;
@@ -61,10 +62,10 @@ import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeLis
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, PermissionsListener, ProgressChangeListener, NavigationEventListener,
+public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, ProgressChangeListener, NavigationEventListener,
         MilestoneEventListener, OffRouteListener, RefreshCallback {
     // variables for adding location layer
-    private MapView mapView;
+    private NavigationView mapView;
     private MapboxMap mapboxMap;
     // variables for adding location layer
     private PermissionsManager permissionsManager;
@@ -73,8 +74,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DirectionsRoute currentRoute;
     private static final String TAG = "DirectionsActivity";
     private NavigationMapRoute navigationMapRoute;
-    // variables needed to initialize navigation
-    private Button button;
 
 
     private String[] locations = {"48.465226, 7.956282", "48.433708, 7.983138", "48.338843, 8.033090"};
@@ -84,9 +83,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_main);
-        mapView = findViewById(R.id.mapView);
+        mapView = findViewById(R.id.navigationView);
         mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
+        // Get the Intent that started this activity and extract the string
+        Intent intent = getIntent();
+        //String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+
     }
 
     @Override
@@ -99,13 +101,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 addDestinationIconSymbolLayer(style);
 
-                mapboxMap.addOnMapClickListener(MainActivity.this);
-                button = findViewById(R.id.startButton);
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                    }
-                });
             }
         });
     }
@@ -122,25 +117,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 iconIgnorePlacement(true)
         );
         loadedMapStyle.addLayer(destinationSymbolLayer);
-    }
-
-    @SuppressWarnings( {"MissingPermission"})
-    @Override
-    public boolean onMapClick(@NonNull LatLng point) {
-
-        Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-        Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
-                locationComponent.getLastKnownLocation().getLatitude());
-
-        GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
-        if (source != null) {
-            source.setGeoJson(Feature.fromGeometry(destinationPoint));
-        }
-
-        getRoute(originPoint, destinationPoint);
-        button.setEnabled(true);
-        button.setBackgroundResource(R.color.mapboxBlue);
-        return true;
     }
 
     private void getRoute(Point origin, Point destination) {
@@ -169,7 +145,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         if (navigationMapRoute != null) {
                             navigationMapRoute.removeRoute();
                         } else {
-                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
+                            navigationMapRoute = new NavigationMapRoute(null, null, mapboxMap, R.style.NavigationMapRoute);
                         }
                         navigationMapRoute.addRoute(currentRoute);
                     }
