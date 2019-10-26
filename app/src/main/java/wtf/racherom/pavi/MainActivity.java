@@ -47,7 +47,6 @@ import android.util.Log;
 // classes needed to launch navigation UI
 import android.view.View;
 import android.widget.Button;
-import com.mapbox.services.android.navigation.ui.v5.NavigationLauncher;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, MapboxMap.OnMapClickListener, PermissionsListener {
@@ -98,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 .shouldSimulateRoute(simulateRoute)
                                 .build();
                         // Call this method with Context from within an Activity
-                        NavigationLauncher.startNavigation(MainActivity.this, options);
+                        wtf.racherom.pavi.NavigationLauncher.startNavigation(MainActivity.this, options);
                     }
                 });
             }
