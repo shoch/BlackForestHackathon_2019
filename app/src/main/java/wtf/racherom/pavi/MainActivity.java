@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // variables needed to initialize navigation
     private Button button;
 
+
+    private String[] locations = {"48.465226, 7.956282", "48.433708, 7.983138", "48.338843, 8.033090"};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
