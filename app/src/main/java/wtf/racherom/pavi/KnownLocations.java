@@ -36,7 +36,7 @@ public class KnownLocations {
     public static Point Kronenpl = Point.fromLngLat(7.938779, 48.468405);
     public static Point Forum = Point.fromLngLat(7.938779, 48.468405);
     public static Point oeffi = Point.fromLngLat(7.945319, 48.469218);
-    public static Point     altOffenburg = Point.fromLngLat(7.948078, 48.468947);
+    public static Point altOffenburg = Point.fromLngLat( 7.947495,48.469227);
     public static Point HSOffenburg = Point.fromLngLat(7.943336, 48.458125);
 
     private static Point[] locations = {
