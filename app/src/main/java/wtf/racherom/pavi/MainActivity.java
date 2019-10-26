@@ -79,9 +79,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // variables needed to initialize navigation
     private Button button;
 
-
-    private String[] locations = {"48.465226, 7.956282", "48.433708, 7.983138", "48.338843, 8.033090"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,8 +133,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onMapClick(@NonNull LatLng point) {
 
         Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-        origin = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
-                locationComponent.getLastKnownLocation().getLatitude());
+        origin = Point.fromLngLat(
+                locationComponent.getLastKnownLocation().getLongitude(),
+                locationComponent.getLastKnownLocation().getLatitude()
+        );
+
+        destinationPoint = KnownLocations.offenburg_ritterhaus;
+        origin = KnownLocations.offenburg_start;
 
         GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
         if (source != null) {

@@ -43,11 +43,10 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
     private DirectionsRoute currentRoute;
     private MapboxNavigation navigation;
     private int locationsIndex = 0;
-    private long $lastRouteFetch; // may prevent to ofte
     private boolean loadRoute = false;
-
-
-    private Point[] locations = {Point.fromLngLat(48.465226, 7.956282), Point.fromLngLat(48.433708, 7.983138), Point.fromLngLat(48.338843, 8.033090)};
+    private int reRouteMax = 1;
+    private int reRoutCount = 0;
+    private long lastLoadRoute = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,9 +146,10 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
                 // You can get the generic HTTP info about the response
-                loadRoute = false;
+                System.out.println("onResponse+loadRoute:" + loadRoute);
 
                 Timber.d("Response code: %s", response.code());
+                System.out.println("onResponse+response.code:" + response.code());
                 if (response.body() == null) {
                     Timber.e("No routes found, make sure you set the right user and access token.");
                     return;
@@ -160,6 +160,8 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
                 currentRoute = response.body().routes().get(0);
                 navigation.startNavigation(currentRoute, DirectionsRouteType.FRESH_ROUTE);
+                loadRoute = false;
+                lastLoadRoute = System.currentTimeMillis();
             }
 
             @Override
@@ -174,11 +176,16 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
     @Override
     public void onProgressChange(Location location, RouteProgress routeProgress) {
         double dist = routeProgress.distanceRemaining();
-        System.out.println(dist);
-        if (dist < 3000 && !loadRoute){
+        System.out.println("onProgressChange+dist:" + dist);
+        long difference = System.currentTimeMillis() - lastLoadRoute;
+        if (dist < 3000 && !loadRoute && difference > 1000 && reRoutCount <= reRouteMax){
             loadRoute = true;
-            getRoute(Point.fromLngLat(location.getLongitude(), location.getLatitude()), locations[locationsIndex]);
-            locationsIndex = (locationsIndex+1) % locations.length;
+            System.out.println("onProgressChange+loadRoute:" + loadRoute);
+            getRoute(
+                    Point.fromLngLat(location.getLongitude(), location.getLatitude()),
+                    KnownLocations.offenburg_parkplatz
+            );
+            reRoutCount++;
         }
     }
 
