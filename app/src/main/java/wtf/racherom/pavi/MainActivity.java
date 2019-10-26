@@ -1,5 +1,6 @@
 package wtf.racherom.pavi;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import java.util.List;
 import androidx.annotation.NonNull;
@@ -104,6 +105,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
+                        intent.putExtra("route", currentRoute);
+                        startActivity(intent);
                     }
                 });
             }

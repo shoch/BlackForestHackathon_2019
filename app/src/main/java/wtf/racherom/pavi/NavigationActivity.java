@@ -65,7 +65,7 @@ import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 public class NavigationActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, ProgressChangeListener, NavigationEventListener,
         MilestoneEventListener, OffRouteListener, RefreshCallback {
     // variables for adding location layer
-    private NavigationView mapView;
+    private NavigationView navigationView;
     private MapboxMap mapboxMap;
     // variables for adding location layer
     private PermissionsManager permissionsManager;
@@ -82,12 +82,11 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
-        setContentView(R.layout.activity_main);
-        mapView = findViewById(R.id.navigationView);
-        mapView.onCreate(savedInstanceState);
-        // Get the Intent that started this activity and extract the string
-        Intent intent = getIntent();
-        //String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+        setContentView(R.layout.activity_navigation);
+        navigationView = findViewById(R.id.navigationView);
+        navigationView.onCreate(savedInstanceState);
+        currentRoute = (DirectionsRoute) getIntent().getSerializableExtra("route");
+
 
     }
 
@@ -198,43 +197,43 @@ public class NavigationActivity extends AppCompatActivity implements OnMapReadyC
     @Override
     protected void onStart() {
         super.onStart();
-        mapView.onStart();
+        navigationView.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
+        navigationView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
+        navigationView.onPause();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mapView.onStop();
+        navigationView.onStop();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mapView.onSaveInstanceState(outState);
+        navigationView.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mapView.onDestroy();
+        navigationView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mapView.onLowMemory();
+        navigationView.onLowMemory();
     }
 
     @Override
