@@ -9,11 +9,13 @@ import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.NavigationView;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
 import com.mapbox.services.android.navigation.v5.milestone.Milestone;
 import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshCallback;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshError;
@@ -28,6 +30,9 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     private NavigationView navigationView;
     private DirectionsRoute currentRoute;
+    private MapboxNavigation navigation;
+    private Location lastLocation;
+    private MapboxMap mapboxMap;
 
 
     private String[] locations = {"48.465226, 7.956282", "48.433708, 7.983138", "48.338843, 8.033090"};
@@ -121,17 +126,19 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     public void onProgressChange(Location location, RouteProgress routeProgress) {
-
+        lastLocation = location;
     }
 
     @Override
     public void onNavigationReady(boolean isRunning) {
+        mapboxMap = navigationView.retrieveNavigationMapboxMap().retrieveMap();
         navigationView.startNavigation(
                 NavigationViewOptions.builder()
                         .shouldSimulateRoute(true)
                         .directionsRoute(currentRoute)
                         .build()
         );
-        navigationView.retrieveMapboxNavigation().addProgressChangeListener(this);
+        navigation = navigationView.retrieveMapboxNavigation();
+        navigation.addProgressChangeListener(this);
     }
 }
