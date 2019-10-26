@@ -221,7 +221,6 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
                         .navigationOptions(MapboxNavigationOptions.builder()
                                 .enableRefreshRoute(false)
                                 .enableFasterRouteDetection(false)
-                                .defaultMilestonesEnabled(false)
                                 .isDebugLoggingEnabled(true)
                                 .build())
                         .build();
