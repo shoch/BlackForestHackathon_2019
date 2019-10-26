@@ -1,10 +1,13 @@
 package wtf.racherom.pavi;
 
 import android.content.Intent;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.location.Location;
 import android.os.Bundle;
+
+import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
@@ -13,16 +16,24 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.NavigationView;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
+import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.milestone.Milestone;
 import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener;
+import com.mapbox.services.android.navigation.v5.navigation.DirectionsRouteType;
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener;
+import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshCallback;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshError;
 import com.mapbox.services.android.navigation.v5.offroute.OffRouteListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import timber.log.Timber;
 
 
 public class NavigationActivity extends AppCompatActivity implements ProgressChangeListener, NavigationEventListener,
@@ -31,11 +42,12 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
     private NavigationView navigationView;
     private DirectionsRoute currentRoute;
     private MapboxNavigation navigation;
-    private Location lastLocation;
-    private MapboxMap mapboxMap;
+    private int locationsIndex = 0;
+    private long $lastRouteFetch; // may prevent to ofte
+    private boolean loadRoute = false;
 
 
-    private String[] locations = {"48.465226, 7.956282", "48.433708, 7.983138", "48.338843, 8.033090"};
+    private Point[] locations = {Point.fromLngLat(48.465226, 7.956282), Point.fromLngLat(48.433708, 7.983138), Point.fromLngLat(48.338843, 8.033090)};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +103,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
     protected void onDestroy() {
         super.onDestroy();
         navigationView.onDestroy();
+        shutdownNavigation();
     }
 
     @Override
@@ -124,14 +137,53 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     }
 
+
+    private void getRoute(Point origin, Point destination) {
+        NavigationRoute.builder(this)
+                .origin(origin)
+                .destination(destination)
+                .accessToken(Mapbox.getAccessToken())
+                .build().getRoute(new Callback<DirectionsResponse>() {
+            @Override
+            public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                // You can get the generic HTTP info about the response
+                loadRoute = false;
+
+                Timber.d("Response code: %s", response.code());
+                if (response.body() == null) {
+                    Timber.e("No routes found, make sure you set the right user and access token.");
+                    return;
+                } else if (response.body().routes().size() < 1) {
+                    Timber.e("No routes found");
+                    return;
+                }
+
+                currentRoute = response.body().routes().get(0);
+                navigation.startNavigation(currentRoute, DirectionsRouteType.FRESH_ROUTE);
+            }
+
+            @Override
+            public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
+                Timber.e("Error: %s", throwable.getMessage());
+                loadRoute = false;
+            }
+
+        });
+    }
+
     @Override
     public void onProgressChange(Location location, RouteProgress routeProgress) {
-        lastLocation = location;
+        double dist = routeProgress.distanceRemaining();
+        System.out.println(dist);
+        if (dist < 3000 && !loadRoute){
+            loadRoute = true;
+            getRoute(Point.fromLngLat(location.getLongitude(), location.getLatitude()), locations[locationsIndex]);
+            locationsIndex = (locationsIndex+1) % locations.length;
+        }
     }
 
     @Override
     public void onNavigationReady(boolean isRunning) {
-        mapboxMap = navigationView.retrieveNavigationMapboxMap().retrieveMap();
         navigationView.startNavigation(
                 NavigationViewOptions.builder()
                         .shouldSimulateRoute(true)
@@ -140,5 +192,11 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
         );
         navigation = navigationView.retrieveMapboxNavigation();
         navigation.addProgressChangeListener(this);
+    }
+
+    private void shutdownNavigation() {
+        navigation.removeNavigationEventListener(this);
+        navigation.removeProgressChangeListener(this);
+        navigation.onDestroy();
     }
 }
