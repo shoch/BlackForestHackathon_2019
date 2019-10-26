@@ -17,6 +17,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.NavigationView;
 import com.mapbox.services.android.navigation.ui.v5.NavigationViewOptions;
 import com.mapbox.services.android.navigation.ui.v5.OnNavigationReadyCallback;
+import com.mapbox.services.android.navigation.ui.v5.map.NavigationMapboxMap;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.milestone.Milestone;
 import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener;
@@ -27,7 +28,9 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListe
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshCallback;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshError;
+import com.mapbox.services.android.navigation.v5.offroute.OffRoute;
 import com.mapbox.services.android.navigation.v5.offroute.OffRouteListener;
+import com.mapbox.services.android.navigation.v5.route.FasterRoute;
 import com.mapbox.services.android.navigation.v5.routeprogress.ProgressChangeListener;
 import com.mapbox.services.android.navigation.v5.routeprogress.RouteProgress;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
@@ -165,7 +168,13 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
                 }
 
                 currentRoute = response.body().routes().get(0);
+                /*
+                NavigationMapboxMap map = navigationView.retrieveNavigationMapboxMap();
+                map.clearMarkers();
                 navigation.startNavigation(currentRoute, DirectionsRouteType.NEW_ROUTE);
+                */
+                navigationView.stopNavigation();
+                navigateTo(currentRoute);
                 loadRoute = false;
                 lastLoadRoute = System.currentTimeMillis();
             }
@@ -185,13 +194,13 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
         System.out.println("onProgressChange+dist:" + dist);
         long difference = System.currentTimeMillis() - lastLoadRoute;
         // !loadRoute && difference > 1000 && reRoutCount <= reRouteMax
-        if (once && dist < 400.0){
+        if (once && dist < 500.0){
             once = false;
             loadRoute = true;
             System.out.println("onProgressChange+loadRoute:" + loadRoute);
             getRoute(
                     Point.fromLngLat(location.getLongitude(), location.getLatitude()),
-                    KnownLocations.offenburg_parkplatz_al2
+                    KnownLocations.offenburg_parkplatz
             );
             reRoutCount++;
         }
@@ -201,21 +210,28 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
     public void onNavigationReady(boolean isRunning) {
         Toast.makeText(getApplicationContext(), "onNavigationReady", Toast.LENGTH_SHORT).show();
         if (!isRunning) {
-            navigationView.startNavigation(
-                    NavigationViewOptions.builder()
-                            .shouldSimulateRoute(true)
-                            .directionsRoute(currentRoute)
-                            .navigationOptions(MapboxNavigationOptions.builder()
-                                    .enableRefreshRoute(false)
-                                    .enableFasterRouteDetection(false)
-                                    .build())
-                            .build()
-            );
-            navigation = navigationView.retrieveMapboxNavigation();
-            navigation.removeNavigationEventListener(this);
-            navigation.removeProgressChangeListener(this);
-            navigation.addProgressChangeListener(this);
+            navigateTo(currentRoute);
         }
+    }
+
+    private void navigateTo(DirectionsRoute route) {
+        NavigationViewOptions options =
+                NavigationViewOptions.builder()
+                        .shouldSimulateRoute(true)
+                        .directionsRoute(route)
+                        .navigationOptions(MapboxNavigationOptions.builder()
+                                .enableRefreshRoute(false)
+                                .enableFasterRouteDetection(false)
+                                .defaultMilestonesEnabled(false)
+                                .isDebugLoggingEnabled(true)
+                                .build())
+                        .build();
+
+        navigationView.startNavigation(options);
+        navigation = navigationView.retrieveMapboxNavigation();
+        navigation.removeNavigationEventListener(this);
+        navigation.removeProgressChangeListener(this);
+        navigation.addProgressChangeListener(this);
     }
 
     private void shutdownNavigation() {
