@@ -214,9 +214,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 locationComponent.getLastKnownLocation().getLongitude(),
                 locationComponent.getLastKnownLocation().getLatitude()
         );
-// todo fake start + goal
-        //destinationPoint = KnownLocations.offenburg_ritterhaus;
-        //origin = KnownLocations.offenburg_start;
+
+        // todo fake start + goal
+        destinationPoint = KnownLocations.presentation_offenburg_ritterhaus;
+        origin = KnownLocations.presentation_offenburg_start;
 
         GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
         if (source != null) {

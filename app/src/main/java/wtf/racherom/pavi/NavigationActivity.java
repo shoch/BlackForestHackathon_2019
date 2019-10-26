@@ -104,7 +104,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     protected void onDestroy() {
-        Toast.makeText(getApplicationContext(), "onDestroy", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onDestroy", Toast.LENGTH_SHORT).show();
         super.onDestroy();
         navigationView.onDestroy();
         shutdownNavigation();
@@ -112,39 +112,39 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     public void onLowMemory() {
-        Toast.makeText(getApplicationContext(), "onLowMemory", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onLowMemory", Toast.LENGTH_SHORT).show();
         super.onLowMemory();
         navigationView.onLowMemory();
     }
 
     @Override
     public void onMilestoneEvent(RouteProgress routeProgress, String instruction, Milestone milestone) {
-        Toast.makeText(getApplicationContext(), "onMilestoneEvent", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onMilestoneEvent", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRunning(boolean running) {
-        Toast.makeText(getApplicationContext(), "onRunning", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onRunning", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRefresh(DirectionsRoute directionsRoute) {
-        Toast.makeText(getApplicationContext(), "onRefresh", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onRefresh", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onError(RefreshError error) {
-        Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void userOffRoute(Location location) {
-        Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
     }
 
 
     private void getRoute(Point origin, Point destination) {
-        Toast.makeText(getApplicationContext(), "getRoute", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "getRoute", Toast.LENGTH_SHORT).show();
         NavigationRoute.builder(this)
                 .origin(origin)
                 .destination(destination)
@@ -152,7 +152,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
                 .build().getRoute(new Callback<DirectionsResponse>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
-                Toast.makeText(getApplicationContext(), "getRoute+onResponse", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getApplicationContext(), "getRoute+onResponse", Toast.LENGTH_SHORT).show();
                 // You can get the generic HTTP info about the response
                 System.out.println("onResponse+loadRoute:" + loadRoute);
 
@@ -193,13 +193,13 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
         System.out.println("onProgressChange+dist:" + dist);
         long difference = System.currentTimeMillis() - lastLoadRoute;
         // !loadRoute && difference > 1000 && reRoutCount <= reRouteMax
-        if (once && dist < 500.0){
+        if (once && dist < 300.0){
             once = false;
             loadRoute = true;
             System.out.println("onProgressChange+loadRoute:" + loadRoute);
             getRoute(
                     Point.fromLngLat(location.getLongitude(), location.getLatitude()),
-                    KnownLocations.offenburg_parkplatz
+                    KnownLocations.presentation_offenburg_parkplatz
             );
             reRoutCount++;
         }
@@ -207,7 +207,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     public void onNavigationReady(boolean isRunning) {
-        Toast.makeText(getApplicationContext(), "onNavigationReady", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(getApplicationContext(), "onNavigationReady", Toast.LENGTH_SHORT).show();
         if (!isRunning) {
             navigateTo(currentRoute);
         }

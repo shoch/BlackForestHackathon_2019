@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Random;
 
 public class KnownLocations {
+
+    public static Point presentation_offenburg_ritterhaus = Point.fromLngLat(7.944517, 48.468788);
+    public static Point presentation_offenburg_parkplatz = Point.fromLngLat(7.947398, 48.468690);
+    public static Point presentation_offenburg_start = Point.fromLngLat(7.946401, 48.467129);
+
     public static Point offenburg_ritterhaus = Point.fromLngLat(7.944517, 48.468788);
     public static Point offenburg_parkplatz = Point.fromLngLat(7.947398, 48.468690);
     public static Point offenburg_parkplatz_al = Point.fromLngLat(7.949293, 48.467907);
