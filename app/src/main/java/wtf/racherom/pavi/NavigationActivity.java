@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.location.Location;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.geojson.Point;
@@ -21,6 +22,7 @@ import com.mapbox.services.android.navigation.v5.milestone.Milestone;
 import com.mapbox.services.android.navigation.v5.milestone.MilestoneEventListener;
 import com.mapbox.services.android.navigation.v5.navigation.DirectionsRouteType;
 import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigation;
+import com.mapbox.services.android.navigation.v5.navigation.MapboxNavigationOptions;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationEventListener;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 import com.mapbox.services.android.navigation.v5.navigation.RefreshCallback;
@@ -47,6 +49,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
     private int reRouteMax = 1;
     private int reRoutCount = 0;
     private long lastLoadRoute = 0;
+    private boolean once = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,6 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
         Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
         setContentView(R.layout.activity_navigation);
         navigationView = findViewById(R.id.navigationView);
-        navigationView.onCreate(savedInstanceState);
         Intent intent = getIntent();
         currentRoute = (DirectionsRoute) intent.getSerializableExtra("route");
         Point origin = (Point) intent.getSerializableExtra("origin");
@@ -100,6 +102,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     protected void onDestroy() {
+        Toast.makeText(getApplicationContext(), "onDestroy", Toast.LENGTH_SHORT).show();
         super.onDestroy();
         navigationView.onDestroy();
         shutdownNavigation();
@@ -107,37 +110,39 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     public void onLowMemory() {
+        Toast.makeText(getApplicationContext(), "onLowMemory", Toast.LENGTH_SHORT).show();
         super.onLowMemory();
         navigationView.onLowMemory();
     }
 
     @Override
     public void onMilestoneEvent(RouteProgress routeProgress, String instruction, Milestone milestone) {
-
+        Toast.makeText(getApplicationContext(), "onMilestoneEvent", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRunning(boolean running) {
-
+        Toast.makeText(getApplicationContext(), "onRunning", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRefresh(DirectionsRoute directionsRoute) {
-
+        Toast.makeText(getApplicationContext(), "onRefresh", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onError(RefreshError error) {
-
+        Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void userOffRoute(Location location) {
-
+        Toast.makeText(getApplicationContext(), "onError", Toast.LENGTH_SHORT).show();
     }
 
 
     private void getRoute(Point origin, Point destination) {
+        Toast.makeText(getApplicationContext(), "getRoute", Toast.LENGTH_SHORT).show();
         NavigationRoute.builder(this)
                 .origin(origin)
                 .destination(destination)
@@ -145,6 +150,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
                 .build().getRoute(new Callback<DirectionsResponse>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, Response<DirectionsResponse> response) {
+                Toast.makeText(getApplicationContext(), "getRoute+onResponse", Toast.LENGTH_SHORT).show();
                 // You can get the generic HTTP info about the response
                 System.out.println("onResponse+loadRoute:" + loadRoute);
 
@@ -159,7 +165,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
                 }
 
                 currentRoute = response.body().routes().get(0);
-                navigation.startNavigation(currentRoute, DirectionsRouteType.FRESH_ROUTE);
+                navigation.startNavigation(currentRoute, DirectionsRouteType.NEW_ROUTE);
                 loadRoute = false;
                 lastLoadRoute = System.currentTimeMillis();
             }
@@ -178,12 +184,14 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
         double dist = routeProgress.distanceRemaining();
         System.out.println("onProgressChange+dist:" + dist);
         long difference = System.currentTimeMillis() - lastLoadRoute;
-        if (dist < 3000 && !loadRoute && difference > 1000 && reRoutCount <= reRouteMax){
+        // !loadRoute && difference > 1000 && reRoutCount <= reRouteMax
+        if (once && dist < 400.0){
+            once = false;
             loadRoute = true;
             System.out.println("onProgressChange+loadRoute:" + loadRoute);
             getRoute(
                     Point.fromLngLat(location.getLongitude(), location.getLatitude()),
-                    KnownLocations.offenburg_parkplatz
+                    KnownLocations.offenburg_parkplatz_al2
             );
             reRoutCount++;
         }
@@ -191,14 +199,23 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
 
     @Override
     public void onNavigationReady(boolean isRunning) {
-        navigationView.startNavigation(
-                NavigationViewOptions.builder()
-                        .shouldSimulateRoute(true)
-                        .directionsRoute(currentRoute)
-                        .build()
-        );
-        navigation = navigationView.retrieveMapboxNavigation();
-        navigation.addProgressChangeListener(this);
+        Toast.makeText(getApplicationContext(), "onNavigationReady", Toast.LENGTH_SHORT).show();
+        if (!isRunning) {
+            navigationView.startNavigation(
+                    NavigationViewOptions.builder()
+                            .shouldSimulateRoute(true)
+                            .directionsRoute(currentRoute)
+                            .navigationOptions(MapboxNavigationOptions.builder()
+                                    .enableRefreshRoute(false)
+                                    .enableFasterRouteDetection(false)
+                                    .build())
+                            .build()
+            );
+            navigation = navigationView.retrieveMapboxNavigation();
+            navigation.removeNavigationEventListener(this);
+            navigation.removeProgressChangeListener(this);
+            navigation.addProgressChangeListener(this);
+        }
     }
 
     private void shutdownNavigation() {
