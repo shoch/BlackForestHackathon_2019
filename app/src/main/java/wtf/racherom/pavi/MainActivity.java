@@ -159,70 +159,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 BitmapFactory.decodeResource(this.getResources(), R.drawable.mapbox_marker_icon_default));
         GeoJsonSource geoJsonSource = new GeoJsonSource("parking-source-id");
 
-        Feature f1 = Feature.fromGeometry( Point.fromLngLat( 7.956282,48.465226));
+       /* Feature f1 = Feature.fromGeometry( Point.fromLngLat( 7.956282,48.465226));
         f1.addNumberProperty("occupancy",0);
         f1.addNumberProperty("name",0);
         f1.addNumberProperty("radius",20);
 
         Feature f2 = Feature.fromGeometry( Point.fromLngLat(  8.033090,48.338843));
         f2.addNumberProperty("occupancy",1);
-        f2.addNumberProperty("radius",40);
+        f2.addNumberProperty("radius",40);*/
 
 
-       /* Pendelerparkplatz
-        48.474951, 7.937955
 
-        Offenburg Ei
-        48.473521, 7.909156
-
-        Offenburg Edeka
-        48.482172, 7.925121
-
-        TBO
-        48.485415, 7.933278
-
-        DB1
-        48.479872, 7.946796
-
-        Maria-und-Georg-Dietrich-Straße (Banhof)
-        48.478834, 7.948965
-
-        Cityparkhaus
-        48.473003, 7.938601
-
-        Zentrum west
-        48.469580, 7.936054
-
-        MArktplatz
-        48.470325, 7.941675
-
-        Tiefgarage MArktplatz
-        48.469647, 7.941572
-
-        Vinci park
-        48.471070, 7.947908
-
-        Kronenpl. 25-24
-        77652 Offenburg
-        48.468405, 7.938779
-
-        Forum
-        48.468405, 7.938779
-
-        Öffi
-        48.469218, 7.945319
-
-        alt Offenburg
-        48.468947, 7.948078
-
-        HS-Offenburg
-        48.458125, 7.943336*/
        // List<Feature> featureCollection = new ArrayList<Feature>();
-        featureCollection.add(f1);
-        featureCollection.add(f2);
+        //featureCollection.add(f1);
+        //featureCollection.add(f2);
 
 
-        geoJsonSource.setGeoJson(FeatureCollection.fromFeatures(featureCollection));
+        geoJsonSource.setGeoJson(FeatureCollection.fromFeatures(KnownLocations.getFeatuers()));
         //geoJsonSource.setGeoJson(f2);
 
         loadedMapStyle.addSource(geoJsonSource);
