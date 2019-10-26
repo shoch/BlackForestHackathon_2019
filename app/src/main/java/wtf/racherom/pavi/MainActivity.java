@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     // variables for adding location layer
     private MapView mapView;
     private MapboxMap mapboxMap;
+
+    private Point origin;
     // variables for adding location layer
     private PermissionsManager permissionsManager;
     private LocationComponent locationComponent;
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onClick(View v) {
                         Intent intent = new Intent(MainActivity.this, NavigationActivity.class);
                         intent.putExtra("route", currentRoute);
+                        intent.putExtra("origin", origin);
                         startActivity(intent);
                     }
                 });
@@ -133,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onMapClick(@NonNull LatLng point) {
 
         Point destinationPoint = Point.fromLngLat(point.getLongitude(), point.getLatitude());
-        Point originPoint = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
+        origin = Point.fromLngLat(locationComponent.getLastKnownLocation().getLongitude(),
                 locationComponent.getLastKnownLocation().getLatitude());
 
         GeoJsonSource source = mapboxMap.getStyle().getSourceAs("destination-source-id");
@@ -141,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             source.setGeoJson(Feature.fromGeometry(destinationPoint));
         }
 
-        getRoute(originPoint, destinationPoint);
+        getRoute(origin, destinationPoint);
         button.setEnabled(true);
         button.setBackgroundResource(R.color.mapboxBlue);
         return true;
