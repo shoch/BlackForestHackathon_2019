@@ -13,7 +13,7 @@ public class KnownLocations {
     public static Point presentation_offenburg_parkplatz = Point.fromLngLat(7.947398, 48.468690);
     public static Point presentation_offenburg_start = Point.fromLngLat(7.946401, 48.467129);
 
-    public static Point offenburg_ritterhaus = Point.fromLngLat(7.944517, 48.468788);
+    //public static Point offenburg_ritterhaus = Point.fromLngLat(7.944517, 48.468788);
     public static Point offenburg_parkplatz = Point.fromLngLat(7.947398, 48.468690);
     public static Point offenburg_parkplatz_al = Point.fromLngLat(7.949293, 48.467907);
     public static Point offenburg_parkplatz_al2 = Point.fromLngLat(7.952467, 48.468518);
@@ -123,8 +123,16 @@ public class KnownLocations {
 
         for (int i=0;i<locations.length;i++)
         {
+
+
             Feature feature = Feature.fromGeometry(locations[i]);
             feature.addNumberProperty("occupancy", Math.random()%1);
+            if(i==16) {
+                feature.addNumberProperty("occupancy", 1);
+            }
+            if(i==17) {
+                feature.addNumberProperty("occupancy", 0);
+            }
             feature.addNumberProperty("radius",Math.random()%40);
             features.add(feature);
         }
