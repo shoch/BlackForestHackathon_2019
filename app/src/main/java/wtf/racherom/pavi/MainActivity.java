@@ -176,22 +176,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 stop(110, 40f)
                         )
                 ),
-               //circleRadius(get("radius")),
-               /* circleRadius(
-                        interpolate(linear(), get("radius") ,
-                                stop(0, 10f),
-                                stop(10, 20f),
-                                stop(20, 30f),
-                                stop(110, 40f)
-                        )
-                ),*/
-               /* circleRadius(
-                        interpolate(linear(),zoom(),
-                                stop(1, 10),
-                                stop(16,160)
-                        )
-
-                ),*/
                 circleColor(
                         interpolate(
                                 linear(), get("occupancy"),

@@ -193,6 +193,7 @@ public class NavigationActivity extends AppCompatActivity implements ProgressCha
         System.out.println("onProgressChange+dist:" + dist);
         long difference = System.currentTimeMillis() - lastLoadRoute;
         // !loadRoute && difference > 1000 && reRoutCount <= reRouteMax
+        // todo fake second goal
         if (once && dist < 300.0){
             once = false;
             loadRoute = true;
